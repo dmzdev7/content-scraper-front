@@ -1,8 +1,8 @@
-import { auth } from "@/lib/auth/nextAuth";
+import { getSession } from "@/lib/auth/get-session";
 import { redirect } from "next/navigation";
 
 export default async function HomePage() {
-  const session = await auth();
+  const session = await getSession();
 
   if (session) redirect("/dashboard");
 
