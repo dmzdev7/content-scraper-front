@@ -1,9 +1,9 @@
-import { config } from "@/config/env.config";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { config } from "@/config/env";
+import { NextAuthOptions } from "next-auth";
 // import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export const authConfig: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     // GoogleProvider({
       // clientId: config.google_id,
@@ -53,10 +53,6 @@ export const authConfig: NextAuthOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
@@ -74,7 +70,7 @@ export const authConfig: NextAuthOptions = {
       //         "Content-Type": "application/json",
       //       },
       //       body: JSON.stringify({
-      //         email: user.email,
+        //         email: user.email,
       //         name: user.name,
       //         googleId: account.providerAccountId,
       //       }),
@@ -87,7 +83,7 @@ export const authConfig: NextAuthOptions = {
       //       token.role = data.user.role;
       //     }
       //   } catch (error) {
-      //     console.error("Google auth error:", error);
+        //     console.error("Google auth error:", error);
       //   }
       // }
 
@@ -103,11 +99,13 @@ export const authConfig: NextAuthOptions = {
       return session;
     },
   },
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: config.auth_secret,
 };
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
