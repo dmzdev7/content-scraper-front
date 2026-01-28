@@ -1,22 +1,32 @@
-import { auth } from "@/lib/auth/nextAuth";
+import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { config as envConfig } from "@/config/env";
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
+  // En el Middleware usamos getToken en lugar de getSession
+  const token = await getToken({ 
+    req: request, 
+    secret: envConfig.auth_secret 
+  });
+
+  const { pathname } = request.nextUrl;
+
   const isAuthPage =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/register") ||
-    request.nextUrl.pathname.startsWith("/forgot-password") ||
-    request.nextUrl.pathname.startsWith("/reset-password");
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password");
 
-  const isDashboardPage = request.nextUrl.pathname.startsWith("/dashboard");
+  const isDashboardPage = pathname.startsWith("/dashboard");
 
-  if (isDashboardPage && !session) {
+  // Si intenta entrar al dashboard sin token (sesión)
+  if (isDashboardPage && !token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAuthPage && session) {
+  // Si ya tiene token e intenta ir a login/register
+  if (isAuthPage && token) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
