@@ -26,15 +26,17 @@ try {
 } catch (error) {
   if (error instanceof z.ZodError) {
     const { fieldErrors } = error.flatten();
-    console.error("❌ Error: Variables de entorno inválidas o faltantes:");
-    console.error(JSON.stringify(fieldErrors, null, 2));
+    const errorMessage = `❌ Variables de entorno inválidas: ${JSON.stringify(fieldErrors, null, 2)}`;
+    console.error(errorMessage);
+    // Lanzamos el error en lugar de usar process.exit(1)
+    throw new Error(errorMessage);
   } else {
     console.error(
       "❌ Error inesperado al validar variables de entorno:",
       error,
     );
+    throw error;
   }
-  process.exit(1);
 }
 
 export const config = {
