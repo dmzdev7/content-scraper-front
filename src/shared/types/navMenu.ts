@@ -6,17 +6,18 @@ export interface NavItem {
   href: string;
 }
 
-export interface NavItemProps extends NavItem {
-  isCollapsed: boolean;
-}
-
-
 export interface UserProfile {
   name?: string | null;
   email?: string | null;
   role?: string;
 }
 
-export interface HeaderProps {
+// Props para el ítem individual
+export interface NavItemProps extends NavItem {
+  isCollapsed: boolean;
+}
+
+// Props para el Sidebar completo
+export interface SidebarProps {
   user: UserProfile;
 }
