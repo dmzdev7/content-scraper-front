@@ -1,58 +1,52 @@
 import z from "zod";
 
-// export const env = _env.data;
-const envSchema = z.object({
-  // API
+// --- ESQUEMA PÚBLICO (Disponible en Browser + Server) ---
+const publicEnvSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url(),
+  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+});
 
-  // Auth
+// --- ESQUEMA PRIVADO (Solo disponible en Server) ---
+const serverEnvSchema = z.object({
   NEXTAUTH_URL: z.string().url(),
   NEXTAUTH_SECRET: z.string().min(10),
-
-  // App State
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .default("development"),
-
-  // OAuth
   GOOGLE_CLIENT_ID: z.string().min(1),
   GOOGLE_CLIENT_SECRET: z.string().min(10),
 });
 
-let envFront: z.infer<typeof envSchema>;
+// 1. Validar siempre lo público
+const _publicEnv = publicEnvSchema.safeParse({
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NODE_ENV: process.env.NODE_ENV,
+});
 
-try {
-  envFront = envSchema.parse(process.env);
-} catch (error) {
-  if (error instanceof z.ZodError) {
-    const { fieldErrors } = error.flatten();
-    const errorMessage = `❌ Variables de entorno inválidas: ${JSON.stringify(fieldErrors, null, 2)}`;
-    console.error(errorMessage);
-    // Lanzamos el error en lugar de usar process.exit(1)
-    throw new Error(errorMessage);
-  } else {
-    console.error(
-      "❌ Error inesperado al validar variables de entorno:",
-      error,
-    );
-    throw error;
+if (!_publicEnv.success) {
+  console.error("❌ Variables públicas inválidas:", _publicEnv.error.flatten().fieldErrors);
+  throw new Error("Invalid public environment variables");
+}
+
+// 2. Validar lo privado SOLO si estamos en el servidor
+let _serverEnv = {} as z.infer<typeof serverEnvSchema>;
+
+if (typeof window === "undefined") {
+  const serverCheck = serverEnvSchema.safeParse(process.env);
+  if (!serverCheck.success) {
+    console.error("❌ Variables de servidor inválidas:", serverCheck.error.flatten().fieldErrors);
+    throw new Error("Invalid server environment variables");
   }
+  _serverEnv = serverCheck.data;
 }
 
 export const config = {
-  // API
-  api_back: envFront.NEXT_PUBLIC_API_URL,
+  // Públicas
+  api_back: _publicEnv.data.NEXT_PUBLIC_API_URL,
+  env: _publicEnv.data.NODE_ENV,
 
-  // Auth
-  auth_url: envFront.NEXTAUTH_URL,
-  auth_secret: envFront.NEXTAUTH_SECRET,
-
-  // App State
-  env: envFront.NODE_ENV,
-
-  // OAuth
-  google_id: envFront.GOOGLE_CLIENT_ID,
-  google_secret: envFront.GOOGLE_CLIENT_SECRET,
+  // Privadas (Serán undefined en el cliente, lo cual es correcto por seguridad)
+  auth_url: _serverEnv.NEXTAUTH_URL,
+  auth_secret: _serverEnv.NEXTAUTH_SECRET,
+  google_id: _serverEnv.GOOGLE_CLIENT_ID,
+  google_secret: _serverEnv.GOOGLE_CLIENT_SECRET,
 } as const;
 
 export type AppConfig = typeof config;
