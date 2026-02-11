@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/infrastructure/lib/utils";
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
