@@ -1,13 +1,13 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { config as envConfig } from "@/config/env";
+import { config as envConfig } from "@/infrastructure/config/env";
 
 export async function middleware(request: NextRequest) {
   // En el Middleware usamos getToken en lugar de getSession
-  const token = await getToken({ 
-    req: request, 
-    secret: envConfig.auth_secret 
+  const token = await getToken({
+    req: request,
+    secret: envConfig.auth_secret,
   });
 
   const { pathname } = request.nextUrl;

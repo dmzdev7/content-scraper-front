@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import { SessionProvider } from "@/components/providers/SessionProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { SessionProvider } from "@/presentation/providers/SessionProvider";
+import { Toaster } from "@/presentation/components/ui/sonner";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -10,7 +10,8 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "ContentMint",
-  description: "Transform raw product data into compelling marketing copy. The ultimate tool for high-volume e-commerce content generation.",
+  description:
+    "Transform raw product data into compelling marketing copy. The ultimate tool for high-volume e-commerce content generation.",
 };
 
 export default function RootLayout({
