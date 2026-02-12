@@ -1,6 +1,6 @@
-import Header from "@/components/dashboard/header";
-import Sidebar from "@/components/dashboard/sidebar";
-import { getSession } from "@/lib/auth/get-session";
+import Header from "@/presentation/components/layout/header";
+import Sidebar from "@/presentation/components/layout/sidebar";
+import { getSession } from "@/shared/helpers/get-session";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
