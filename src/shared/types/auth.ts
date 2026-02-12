@@ -1,15 +1,5 @@
+import { User } from "@/core/auth/domain/user.entity";
 import { ApiResponse } from "./api";
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'ADMIN' | 'USER' | 'MODERATOR';
-  isActive: boolean;
-  isVerified: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface AuthData {
   user: User;
@@ -17,11 +7,20 @@ export interface AuthData {
   refreshToken: string;
 }
 
-// 1. Devuelve tokens + user
+// 1. Tokens + User
 export type LoginResponse = ApiResponse<AuthData>;
 
-// 2. Devuelve solo el objeto user dentro de data { data: { user: User } }
+// 2. data: { user: User }
 export type RegisterResponse = ApiResponse<{ user: User }>;
 
-// 3. Devuelve solo un mensaje de éxito { data: { message: string } }
+// 3. data: { message: string }
 export type LogoutResponse = ApiResponse<{ message: string }>;
+
+// 4. data: { message: string }
+export type ForgotPasswordResponse = ApiResponse<{ message: string }>;
+
+// 5. data: { message: string }
+export type ResetPasswordResponse = ApiResponse<{ message: string }>;
+
+// 6. data: { message: string, user: User }
+export type VerifyEmailResponse = ApiResponse<{ message: string; user: User }>;
